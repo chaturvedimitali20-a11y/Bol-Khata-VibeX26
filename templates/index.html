@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bol-Khata | Voice Assistant for Chaiwalas</title>
+    <script src="https://tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 min-h-screen font-sans text-gray-800">
+    <div class="max-w-3xl mx-auto p-6">
+        <!-- Header -->
+        <div class="bg-amber-700 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center mb-6">
+            <div>
+                <h1 class="text-3xl font-bold">☕ Bol-Khata (बोल-खाता)</h1>
+                <p class="text-amber-100 text-sm mt-1">Hands-Free Voice Udhaar & Stock Helper for Small Vendors</p>
+            </div>
+            <div class="text-right bg-amber-800 px-4 py-2 rounded-xl">
+                <span class="text-xs uppercase text-amber-200">Total Pending Udhaar</span>
+                <p class="text-2xl font-extrabold">₹{{ total_udhaar }}</p>
+            </div>
+        </div>
+
+        <!-- Voice Input Card -->
+        <div class="bg-white p-6 rounded-2xl shadow-md mb-6 text-center border-2 border-amber-200">
+            <p class="text-gray-600 mb-4 font-medium">Tap the mic to speak—or type—in Hindi or English.<br>
+            <span class="text-sm text-amber-700 italic">"Write 40 rupees credit for Mohan" or "Order 20 packets of milk"</span></p>
+            
+            <button type="button" onclick="startVoice()" id="micBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-full text-xl shadow-lg transition transform hover:scale-105">
+                🎤 Tap to Speak (बोलें)
+            </button>
+
+            <form method="POST" id="voiceForm" class="mt-4 flex gap-2">
+                <input type="text" name="command" id="commandInput" placeholder="Spoken command appears here (or type to test)..." class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-amber-600" required>
+                <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-6 py-3 rounded-xl">Save</button>
+            </form>
+
+            {% if status_msg %}
+            <div class="mt-4 bg-green-100 border border-green-400 text-green-800 px-4 py-2 rounded-xl font-semibold">
+                ✅ {{ status_msg }}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Two Columns: Udhaar Ledger & Stock Inventory -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Customer Udhaar -->
+            <div class="bg-white p-5 rounded-2xl shadow-md">
+                <h2 class="text-xl font-bold text-amber-900 mb-3">📒 Customer Udhaar Ledger</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b text-gray-500 text-sm">
+                            <th class="py-2">Customer</th>
+                            <th class="py-2">Pending</th>
+                            <th class="py-2 text-right">Remind</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer, amount in udhaar_list %}
+                        <tr class="border-b hover:bg-amber-50">
+                            <td class="py-3 font-semibold">{{ customer }}</td>
+                            <td class="py-3 text-red-600 font-bold">₹{{ amount }}</td>
+                            <td class="py-3 text-right">
+                                <a href="https://wa.me{{ customer }}%2C%20your%20pending%20tea%20stall%20udhaar%20is%20Rs.{{ amount }}.%20Please%20pay%20via%20UPI." target="_blank" class="bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg hover:bg-green-700">
+                                    WhatsApp UPI
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Daily Inventory -->
+            <div class="bg-white p-5 rounded-2xl shadow-md">
+                <h2 class="text-xl font-bold text-amber-900 mb-3">📦 Shop Stock & Auto-Orders</h2>
+                <div class="space-y-3">
+                    {% for item, qty, status in inventory_list %}
+                    <div class="p-3 bg-amber-50 rounded-xl flex justify-between items-center border border-amber-200">
+                        <div>
+                            <p class="font-bold text-gray-800">{{ item }}</p>
+                            <span class="text-xs px-2 py-0.5 rounded bg-amber-200 text-amber-900 font-medium">{{ status }}</span>
+                        </div>
+                        <span class="text-xl font-extrabold text-amber-800">{{ qty }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function startVoice() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Please use Google Chrome or Edge for voice input, or type in the box!");
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'en-IN';
+            document.getElementById('micBtn').innerText = "🔴 Listening...";
+            recognition.start();
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById('commandInput').value = transcript;
+                document.getElementById('micBtn').innerText = "🎤 Tap to Speak (बोलें)";
+                document.getElementById('voiceForm').submit();
+            };
+            recognition.onerror = function() {
+                document.getElementById('micBtn').innerText = "🎤 Tap to Speak (बोलें)";
+            };
+        }
+    </script>
+</body>
+</html>
