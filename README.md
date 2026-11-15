@@ -1,6 +1,8 @@
 # ☕ Bol-Khata (बोल-खाता) — VibeX Codes 26 (Track 1)
 **Built by:** Mitali Chaturvedi (Solo Builder)
 
+- 🎥 **[Watch Live Demo Video Directly on LinkedIn](https://lnkd.in/p/grY5YNxQ)** *(or download `DemoVideo_BolKhata_MitaliChtaruvedi.mp4` above)*
+
 A **10-second, hands-free voice & text *udhaar* (credit) and daily stock manager** built for Indian chaiwalas, street vendors, and small shopkeepers.
 
 ---
@@ -34,4 +36,3 @@ Small street vendors and chaiwalas work 14+ hours daily serving dozens of shouti
 ### 🛠️ Tech Stack & AI Disclosure
 - **Tech Stack:** Python 3, Flask, SQLite3, HTML5, Tailwind CSS, Browser Web Speech API (`en-IN` / `hi-IN`), WhatsApp Deep Links (`wa.me`).
 - **AI Disclosure:** Built using Python, Flask, and SQLite with AI-assisted code generation and NLP command-parsing structure (Adaption-ready).
-
